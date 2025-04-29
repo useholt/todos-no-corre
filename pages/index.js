@@ -35,37 +35,19 @@ export default function Mural() {
       padding: '40px 20px',
       fontFamily: "'Helvetica Neue', sans-serif"
     }}>
-      {/* Cabeçalho com Logo Holt e Textos */}
+      {/* Cabeçalho com Logo Holt */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        {/* Logo Holt */}
         <img 
           src="/logo-holt.png" 
           alt="Holt" 
           style={{ 
             width: '200px',
-            margin: '0 auto',
+            margin: '0 auto 20px',
             display: 'block'
           }} 
         />
-        
-        {/* "TODOS NO CORRE" */}
-        <h1 style={{ 
-          fontSize: '2.5rem',
-          fontWeight: 'bold',
-          margin: '20px 0 10px',
-          textTransform: 'uppercase'
-        }}>
-          TODOS NO CORRE
-        </h1>
-        
-        {/* Frase inspiradora */}
-        <p style={{ 
-          fontSize: '1.2rem',
-          maxWidth: '600px',
-          margin: '0 auto',
-          lineHeight: '1.6'
-        }}>
-          Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
+        <p style={{ fontSize: '1.2rem', margin: '20px 0' }}>
+          <strong>TODOS NO CORRE!</strong> Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
         </p>
       </div>
 
@@ -123,7 +105,11 @@ export default function Mural() {
               color: '#000',
               border: 'none',
               fontWeight: 'bold',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              transition: 'all 0.3s',
+              ':hover': {
+                background: '#ddd'
+              }
             }}
           >
             PUBLICAR
@@ -131,70 +117,43 @@ export default function Mural() {
         </form>
       </div>
 
-      {/* Mural de Sonhos com Imagem de Fundo */}
+      {/* Mural de Sonhos */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: '30px',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+        gap: '20px',
         padding: '20px'
       }}>
         {dreamsList.map((item, index) => (
           <div key={index} style={{
-            background: `url('/Hello.png') center/cover no-repeat`,
-            padding: '40px 20px',
+            background: '#111',
+            padding: '20px',
             borderRadius: '8px',
-            position: 'relative',
-            minHeight: '300px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            textAlign: 'center',
-            color: '#000',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
+            borderLeft: '4px solid #fff'
           }}>
-            {/* Overlay escuro para melhor legibilidade */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0,0,0,0.4)',
-              borderRadius: '8px'
-            }}></div>
-            
-            {/* Conteúdo do card (sobreposto) */}
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <h3 style={{ 
-                fontSize: '1.2rem',
-                marginBottom: '10px',
-                color: '#fff'
-              }}>
-                HELLO,
-              </h3>
-              <h2 style={{ 
-                fontSize: '2rem',
-                fontWeight: 'bold',
-                margin: '10px 0',
-                color: '#fff',
-                textTransform: 'uppercase'
-              }}>
-                MY NAME IS {item.name}
-              </h2>
-              <p style={{ 
-                fontSize: '1.1rem',
-                color: '#fff',
-                fontStyle: 'italic',
-                margin: '20px 0'
-              }}>
-                "{item.dream}"
-              </p>
-              <div style={{ 
-                marginTop: '20px',
-                color: '#fff'
-              }}>
-                🍀 🍀 🍀
-              </div>
+            <h3 style={{ color: '#fff', marginBottom: '10px' }}>HELLO,</h3>
+            <h2 style={{ 
+              color: '#fff', 
+              fontSize: '1.8rem',
+              fontWeight: 'bold',
+              margin: '10px 0',
+              textTransform: 'uppercase'
+            }}>
+              MY NAME IS {item.name}
+            </h2>
+            <p style={{ 
+              color: '#ccc', 
+              fontStyle: 'italic',
+              minHeight: '60px'
+            }}>
+              "{item.dream}"
+            </p>
+            <div style={{ 
+              marginTop: '15px', 
+              color: '#fff',
+              textAlign: 'right'
+            }}>
+              🍀 🍀 🍀
             </div>
           </div>
         ))}
