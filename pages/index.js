@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import html2canvas from 'html2canvas';
 
 export default function Mural() {
   const [name, setName] = useState('');
   const [dream, setDream] = useState('');
   const [dreamsList, setDreamsList] = useState([]);
+  const cardRefs = useRef([]);
 
   // Busca os sonhos do Supabase
   useEffect(() => {
@@ -27,6 +29,15 @@ export default function Mural() {
     }
   };
 
+  const saveCardAsImage = (index) => {
+    html2canvas(cardRefs.current[index]).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `sonho-${dreamsList[index].name}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  };
+
   return (
     <div style={{
       background: '#000',
@@ -35,19 +46,34 @@ export default function Mural() {
       padding: '40px 20px',
       fontFamily: "'Helvetica Neue', sans-serif"
     }}>
-      {/* Cabeçalho com Logo Holt */}
+      {/* Cabeçalho com Logo Holt e Textos */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
         <img 
           src="/logo-holt.png" 
           alt="Holt" 
           style={{ 
             width: '200px',
-            margin: '0 auto 20px',
+            margin: '0 auto',
             display: 'block'
           }} 
         />
-        <p style={{ fontSize: '1.2rem', margin: '20px 0' }}>
-          <strong>TODOS NO CORRE!</strong> Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
+        
+        <h1 style={{ 
+          fontSize: '2.5rem',
+          fontWeight: 'bold',
+          margin: '20px 0 10px',
+          textTransform: 'uppercase'
+        }}>
+          TODOS NO CORRE
+        </h1>
+        
+        <p style={{ 
+          fontSize: '1.2rem',
+          maxWidth: '600px',
+          margin: '0 auto',
+          lineHeight: '1.6'
+        }}>
+          Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
         </p>
       </div>
 
@@ -105,11 +131,7 @@ export default function Mural() {
               color: '#000',
               border: 'none',
               fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'all 0.3s',
-              ':hover': {
-                background: '#ddd'
-              }
+              cursor: 'pointer'
             }}
           >
             PUBLICAR
@@ -120,41 +142,92 @@ export default function Mural() {
       {/* Mural de Sonhos */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-        gap: '20px',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: '30px',
         padding: '20px'
       }}>
         {dreamsList.map((item, index) => (
-          <div key={index} style={{
-            background: '#111',
-            padding: '20px',
-            borderRadius: '8px',
-            borderLeft: '4px solid #fff'
-          }}>
-            <h3 style={{ color: '#fff', marginBottom: '10px' }}>HELLO,</h3>
-            <h2 style={{ 
-              color: '#fff', 
-              fontSize: '1.8rem',
-              fontWeight: 'bold',
-              margin: '10px 0',
-              textTransform: 'uppercase'
+          <div 
+            key={index} 
+            ref={el => cardRefs.current[index] = el}
+            style={{
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              cursor: 'pointer'
+            }}
+            onClick={() => saveCardAsImage(index)}
+          >
+            {/* Card do sonho */}
+            <div style={{
+              backgroundImage: `url('/Hello.png')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              width: '300px',
+              height: '400px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '20px',
+              boxSizing: 'border-box',
+              position: 'relative'
             }}>
-              MY NAME IS {item.name}
-            </h2>
-            <p style={{ 
-              color: '#ccc', 
-              fontStyle: 'italic',
-              minHeight: '60px'
-            }}>
-              "{item.dream}"
-            </p>
-            <div style={{ 
-              marginTop: '15px', 
-              color: '#fff',
-              textAlign: 'right'
-            }}>
-              🍀 🍀 🍀
+              {/* Conteúdo do card */}
+              <div style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                padding: '20px',
+                borderRadius: '10px',
+                width: '90%'
+              }}>
+                <h2 style={{
+                  fontSize: '2rem',
+                  fontWeight: 'bold',
+                  color: '#fff',
+                  margin: '0 0 10px 0',
+                  textTransform: 'uppercase'
+                }}>
+                  {item.name.toUpperCase()}
+                </h2>
+                <p style={{
+                  fontSize: '1.1rem',
+                  color: '#fff',
+                  fontStyle: 'italic',
+                  margin: '0'
+                }}>
+                  "{item.dream}"
+                </p>
+                <div style={{
+                  marginTop: '15px',
+                  color: '#fff',
+                  fontSize: '1.2rem'
+                }}>
+                  🍀 🍀 🍀
+                </div>
+              </div>
             </div>
+            
+            {/* Botão de download (opcional) */}
+            <button 
+              style={{
+                marginTop: '10px',
+                padding: '8px 15px',
+                background: '#fff',
+                color: '#000',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                saveCardAsImage(index);
+              }}
+            >
+              Salvar Imagem
+            </button>
           </div>
         ))}
       </div>
