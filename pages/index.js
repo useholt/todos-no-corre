@@ -176,7 +176,7 @@ export default function Mural() {
                 fontSize: '2rem',
                 fontWeight: 'bold',
                 margin: '10px 0',
-                color: '#fff',
+                color: '#000',
                 textTransform: 'uppercase'
               }}>
                 MY NAME IS {item.name}
