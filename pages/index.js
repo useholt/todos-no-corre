@@ -1,11 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
-import html2canvas from 'html2canvas';
+import { useState, useEffect } from 'react';
 
 export default function Mural() {
   const [name, setName] = useState('');
   const [dream, setDream] = useState('');
   const [dreamsList, setDreamsList] = useState([]);
-  const cardRefs = useRef([]);
 
   // Busca os sonhos do Supabase
   useEffect(() => {
@@ -29,15 +27,6 @@ export default function Mural() {
     }
   };
 
-  const saveCardAsImage = (index) => {
-    html2canvas(cardRefs.current[index]).then(canvas => {
-      const link = document.createElement('a');
-      link.download = `sonho-${dreamsList[index].name}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
-  };
-
   return (
     <div style={{
       background: '#000',
@@ -48,6 +37,7 @@ export default function Mural() {
     }}>
       {/* Cabeçalho com Logo Holt e Textos */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        {/* Logo Holt */}
         <img 
           src="/logo-holt.png" 
           alt="Holt" 
@@ -58,6 +48,7 @@ export default function Mural() {
           }} 
         />
         
+        {/* "TODOS NO CORRE" */}
         <h1 style={{ 
           fontSize: '2.5rem',
           fontWeight: 'bold',
@@ -67,6 +58,7 @@ export default function Mural() {
           TODOS NO CORRE
         </h1>
         
+        {/* Frase inspiradora */}
         <p style={{ 
           fontSize: '1.2rem',
           maxWidth: '600px',
@@ -139,7 +131,7 @@ export default function Mural() {
         </form>
       </div>
 
-      {/* Mural de Sonhos */}
+      {/* Mural de Sonhos com Imagem de Fundo */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
@@ -147,87 +139,63 @@ export default function Mural() {
         padding: '20px'
       }}>
         {dreamsList.map((item, index) => (
-          <div 
-            key={index} 
-            ref={el => cardRefs.current[index] = el}
-            style={{
-              position: 'relative',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              cursor: 'pointer'
-            }}
-            onClick={() => saveCardAsImage(index)}
-          >
-            {/* Card do sonho */}
+          <div key={index} style={{
+            background: `url('/Hello.png') center/cover no-repeat`,
+            padding: '40px 20px',
+            borderRadius: '8px',
+            position: 'relative',
+            minHeight: '300px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            textAlign: 'center',
+            color: '#000',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
+          }}>
+            {/* Overlay escuro para melhor legibilidade */}
             <div style={{
-              backgroundImage: `url('/Hello.png')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              width: '300px',
-              height: '400px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '20px',
-              boxSizing: 'border-box',
-              position: 'relative'
-            }}>
-              {/* Conteúdo do card */}
-              <div style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                padding: '20px',
-                borderRadius: '10px',
-                width: '90%'
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.4)',
+              borderRadius: '8px'
+            }}></div>
+            
+            {/* Conteúdo do card (sobreposto) */}
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <h3 style={{ 
+                fontSize: '1.2rem',
+                marginBottom: '10px',
+                color: '#fff'
               }}>
-                <h2 style={{
-                  fontSize: '2rem',
-                  fontWeight: 'bold',
-                  color: '#fff',
-                  margin: '0 0 10px 0',
-                  textTransform: 'uppercase'
-                }}>
-                  {item.name.toUpperCase()}
-                </h2>
-                <p style={{
-                  fontSize: '1.1rem',
-                  color: '#fff',
-                  fontStyle: 'italic',
-                  margin: '0'
-                }}>
-                  "{item.dream}"
-                </p>
-                <div style={{
-                  marginTop: '15px',
-                  color: '#fff',
-                  fontSize: '1.2rem'
-                }}>
-                  🍀 🍀 🍀
-                </div>
+                HELLO,
+              </h3>
+              <h2 style={{ 
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                margin: '10px 0',
+                color: '#fff',
+                textTransform: 'uppercase'
+              }}>
+                MY NAME IS {item.name}
+              </h2>
+              <p style={{ 
+                fontSize: '1.1rem',
+                color: '#fff',
+                fontStyle: 'italic',
+                margin: '20px 0'
+              }}>
+                "{item.dream}"
+              </p>
+              <div style={{ 
+                marginTop: '20px',
+                color: '#fff'
+              }}>
+                🍀 🍀 🍀
               </div>
             </div>
-            
-            {/* Botão de download (opcional) */}
-            <button 
-              style={{
-                marginTop: '10px',
-                padding: '8px 15px',
-                background: '#fff',
-                color: '#000',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                saveCardAsImage(index);
-              }}
-            >
-              Salvar Imagem
-            </button>
           </div>
         ))}
       </div>
