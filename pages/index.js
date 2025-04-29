@@ -29,26 +29,24 @@ export default function Mural() {
 
   return (
     <div style={{
-      background: '#000',
-      color: '#fff',
+      background: '#fff',
+      color: '#000',
       minHeight: '100vh',
       padding: '40px 20px',
       fontFamily: "'Helvetica Neue', sans-serif"
     }}>
-      {/* Cabeçalho com Logo Holt e Textos */}
+      {/* Cabeçalho com Logo Holt */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        {/* Logo Holt */}
         <img 
           src="/logo-holt.png" 
           alt="Holt" 
           style={{ 
             width: '200px',
-            margin: '0 auto',
+            margin: '0 auto 20px',
             display: 'block'
           }} 
         />
         
-        {/* "TODOS NO CORRE" */}
         <h1 style={{ 
           fontSize: '2.5rem',
           fontWeight: 'bold',
@@ -58,7 +56,6 @@ export default function Mural() {
           TODOS NO CORRE
         </h1>
         
-        {/* Frase inspiradora */}
         <p style={{ 
           fontSize: '1.2rem',
           maxWidth: '600px',
@@ -69,58 +66,54 @@ export default function Mural() {
         </p>
       </div>
 
-      {/* Formulário */}
+      {/* Formulário Simplificado */}
       <div style={{
-        background: '#111',
+        background: '#f5f5f5',
         padding: '30px',
         borderRadius: '8px',
         maxWidth: '500px',
         margin: '0 auto 40px'
       }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>E você, qual é o seu sonho?</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Qual é o seu sonho?</h2>
         
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px' }}>NOME</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: '#222',
-                border: '1px solid #333',
-                color: '#fff'
-              }}
-            />
-          </div>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Seu nome"
+            required
+            style={{
+              width: '100%',
+              padding: '12px',
+              margin: '10px 0',
+              border: '2px solid #000',
+              background: 'transparent'
+            }}
+          />
           
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px' }}>SONHO</label>
-            <textarea
-              value={dream}
-              onChange={(e) => setDream(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: '#222',
-                border: '1px solid #333',
-                color: '#fff',
-                minHeight: '100px'
-              }}
-            />
-          </div>
+          <textarea
+            value={dream}
+            onChange={(e) => setDream(e.target.value)}
+            placeholder="Seu sonho"
+            required
+            style={{
+              width: '100%',
+              padding: '12px',
+              margin: '10px 0',
+              border: '2px solid #000',
+              background: 'transparent',
+              minHeight: '100px'
+            }}
+          />
 
           <button
             type="submit"
             style={{
               width: '100%',
               padding: '15px',
-              background: '#fff',
-              color: '#000',
+              background: '#000',
+              color: '#fff',
               border: 'none',
               fontWeight: 'bold',
               cursor: 'pointer'
@@ -131,7 +124,7 @@ export default function Mural() {
         </form>
       </div>
 
-      {/* Mural de Sonhos com Imagem de Fundo */}
+      {/* Mural de Sonhos Atualizado */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
@@ -143,58 +136,38 @@ export default function Mural() {
             background: `url('/Hello.png') center/cover no-repeat`,
             padding: '40px 20px',
             borderRadius: '8px',
-            position: 'relative',
             minHeight: '300px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             textAlign: 'center',
             color: '#000',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
+            border: '2px solid #000'
           }}>
-            {/* Overlay escuro para melhor legibilidade */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0,0,0,0.4)',
-              borderRadius: '8px'
-            }}></div>
-            
-            {/* Conteúdo do card (sobreposto) */}
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <h3 style={{ 
-                fontSize: '1.2rem',
-                marginBottom: '10px',
-                color: '#fff'
-              }}>
-                HELLO,
-              </h3>
-              <h2 style={{ 
-                fontSize: '2rem',
-                fontWeight: 'bold',
-                margin: '10px 0',
-                color: '#fff',
-                textTransform: 'uppercase'
-              }}>
-                MY NAME IS {item.name}
-              </h2>
+            {/* Nome em Destaque */}
+            <h2 style={{ 
+              fontSize: '2rem',
+              fontWeight: 'bold',
+              margin: '10px 0',
+              textTransform: 'uppercase',
+              textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}>
+              {item.name.toUpperCase()}
+            </h2>
+
+            {/* Sonho com Fundo Branco */}
+            <div style={{ 
+              background: 'rgba(255,255,255,0.9)',
+              padding: '15px',
+              borderRadius: '4px'
+            }}>
               <p style={{ 
                 fontSize: '1.1rem',
-                color: '#fff',
                 fontStyle: 'italic',
-                margin: '20px 0'
+                margin: 0
               }}>
                 "{item.dream}"
               </p>
-              <div style={{ 
-                marginTop: '20px',
-                color: '#fff'
-              }}>
-                🍀 🍀 🍀
-              </div>
             </div>
           </div>
         ))}
