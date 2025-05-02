@@ -29,7 +29,7 @@ export default function Mural() {
 
   return (
     <div style={{
-      background: '#000', // Fundo preto
+      background: '#000',
       color: '#fff',
       minHeight: '100vh',
       padding: '40px 20px',
@@ -47,7 +47,7 @@ export default function Mural() {
         }} 
       />
 
-      {/* Título "TODOS NO CORRE" */}
+      {/* Título principal */}
       <h1 style={{ 
         fontSize: '2.5rem',
         fontWeight: 'bold',
@@ -58,7 +58,7 @@ export default function Mural() {
         TODOS NO CORRE
       </h1>
 
-      {/* Frase inspiradora */}
+      {/* Frase descritiva */}
       <p style={{ 
         fontSize: '1.2rem',
         maxWidth: '600px',
@@ -68,7 +68,7 @@ export default function Mural() {
         Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
       </p>
 
-      {/* Formulário no estilo da imagem */}
+      {/* Formulário */}
       <div style={{
         background: '#111',
         padding: '30px',
@@ -141,7 +141,7 @@ export default function Mural() {
         </form>
       </div>
 
-      {/* Mural de cards no estilo da imagem */}
+      {/* Mural de Cards Ajustado */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
@@ -156,42 +156,37 @@ export default function Mural() {
             padding: '30px 20px',
             borderRadius: '8px',
             minHeight: '400px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            textAlign: 'center',
-            color: '#000', // Texto preto
             position: 'relative',
             overflow: 'hidden'
           }}>
-            {/* Efeito de vinheta para legibilidade */}
-            <div style={{
+            {/* Container do texto na área branca */}
+            <div style={{ 
               position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%)',
-              zIndex: 1
-            }}></div>
-
-            {/* Conteúdo do card */}
-            <div style={{ position: 'relative', zIndex: 2 }}>
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '80%',
+              background: 'rgba(255, 255, 255, 0.9)',
+              borderRadius: '8px',
+              padding: '25px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
               <h2 style={{ 
-                fontSize: '2rem',
+                fontSize: '1.8rem',
                 fontWeight: '900',
                 margin: '0 0 10px',
                 textTransform: 'uppercase',
+                color: '#000',
                 lineHeight: '1.1'
               }}>
                 {item.name.toUpperCase()}
               </h2>
               
               <p style={{ 
-                fontSize: '1.2rem',
+                fontSize: '1.1rem',
                 margin: '15px 0',
-                fontStyle: 'italic',
-                padding: '0 20px'
+                color: '#333',
+                lineHeight: '1.4'
               }}>
                 "{item.dream}"
               </p>
