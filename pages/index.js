@@ -162,8 +162,8 @@ export default function Mural() {
             {/* Container do texto na área branca */}
             <div style={{ 
               position: 'absolute',
-              top: '75%',
-              left: '50%',
+              top: '70%',
+              left: '30%',
               transform: 'translate(-50%, -50%)',
               width: '80%',
               background: 'rgba(255, 255, 255, 0.9)',
