@@ -142,58 +142,67 @@ export default function Mural() {
       </div>
 
       {/* Mural de Cards Ajustado */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: '30px',
-        padding: '20px',
-        maxWidth: '1200px',
-        margin: '0 auto'
+     {/* Mural de Cards */}
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+  gap: '30px',
+  padding: '20px',
+  maxWidth: '1200px',
+  margin: '0 auto'
+}}>
+  {dreamsList.map((item, index) => (
+    <div 
+      key={index}
+      ref={el => cardRefs.current[index] = el} // Vincula a referência
+      style={{
+        background: `url('/Hello.png') center/cover no-repeat`,
+        width: '100%',
+        height: '1417px', 
+        position: 'relative',
+        margin: '20px auto',
+        maxWidth: '1772px',
+        cursor: 'pointer'
+      }}
+    >
+      {/* Área do texto */}
+      <div style={{ 
+        position: 'absolute',
+        top: '63.7%', 
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '80%',
+        textAlign: 'center',
+        background: 'rgba(255,255,255,0.9)',
+        padding: '30px',
+        borderRadius: '10px'
       }}>
-        {dreamsList.map((item, index) => (
-          <div key={index} style={{
-            background: `url('/Hello.png') center/cover no-repeat`,
-            padding: '30px 20px',
-            borderRadius: '8px',
-            minHeight: '400px',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            {/* Container do texto na área branca */}
-            <div style={{ 
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '80%',
-              background: 'rgba(255, 255, 255, 0.9)',
-              borderRadius: '8px',
-              padding: '25px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-            }}>
-              <h2 style={{ 
-                fontSize: '1.8rem',
-                fontWeight: '900',
-                margin: '0 0 10px',
-                textTransform: 'uppercase',
-                color: '#000',
-                lineHeight: '1.1'
-              }}>
-                {item.name.toUpperCase()}
-              </h2>
-              
-              <p style={{ 
-                fontSize: '1.1rem',
-                margin: '15px 0',
-                color: '#333',
-                lineHeight: '1.4'
-              }}>
-                "{item.dream}"
-              </p>
-            </div>
-          </div>
-        ))}
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#000' }}>
+          {item.name.toUpperCase()}
+        </h2>
+        <p style={{ fontSize: '1.5rem', color: '#333', marginTop: '20px' }}>
+          "{item.dream}"
+        </p>
       </div>
+
+      {/* Botão de Download */}
+      <button
+        onClick={() => saveCardAsImage(index)} // Chama a função
+        style={{
+          position: 'absolute',
+          bottom: '50px',
+          right: '50px',
+          background: '#000',
+          color: '#fff',
+          padding: '10px 20px',
+          border: 'none',
+          cursor: 'pointer',
+          borderRadius: '5px',
+          fontSize: '1.1rem'
+        }}
+      >
+        Baixar Imagem
+      </button>
     </div>
-  );
-}
+  ))}
+</div>
