@@ -7,7 +7,6 @@ export default function Mural() {
   const [dreamsList, setDreamsList] = useState([]);
   const cardRefs = useRef([]);
 
-  // Busca os sonhos do Supabase
   useEffect(() => {
     fetch('/api/getDreams')
       .then(res => res.json())
@@ -47,7 +46,6 @@ export default function Mural() {
       fontFamily: "'Helvetica Neue', sans-serif",
       textAlign: 'center'
     }}>
-      {/* Logo Holt */}
       <img 
         src="/logo-holt.png" 
         alt="Holt" 
@@ -58,7 +56,6 @@ export default function Mural() {
         }} 
       />
 
-      {/* Título principal */}
       <h1 style={{ 
         fontSize: '2.5rem',
         fontWeight: 'bold',
@@ -69,7 +66,6 @@ export default function Mural() {
         TODOS NO CORRE
       </h1>
 
-      {/* Frase descritiva */}
       <p style={{ 
         fontSize: '1.2rem',
         maxWidth: '600px',
@@ -79,7 +75,6 @@ export default function Mural() {
         Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
       </p>
 
-      {/* Formulário */}
       <div style={{
         background: '#111',
         padding: '30px',
@@ -152,7 +147,6 @@ export default function Mural() {
         </form>
       </div>
 
-      {/* Mural de Cards */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
@@ -214,6 +208,7 @@ export default function Mural() {
           </div>
         ))}
       </div>
-    </div>
+    </div>  
   );
 }
+
