@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import html2canvas from 'html2canvas';
 
 export default function Mural() {
   const [name, setName] = useState('');
   const [dream, setDream] = useState('');
   const [dreamsList, setDreamsList] = useState([]);
+  const cardRefs = useRef([]);
 
   // Busca os sonhos do Supabase
   useEffect(() => {
@@ -25,6 +27,15 @@ export default function Mural() {
       setName('');
       setDream('');
     }
+  };
+
+  const saveCardAsImage = (index) => {
+    html2canvas(cardRefs.current[index]).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `sonho-${dreamsList[index].name}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
   };
 
   return (
@@ -141,68 +152,68 @@ export default function Mural() {
         </form>
       </div>
 
-      {/* Mural de Cards Ajustado */}
-     {/* Mural de Cards */}
-<div style={{
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-  gap: '30px',
-  padding: '20px',
-  maxWidth: '1200px',
-  margin: '0 auto'
-}}>
-  {dreamsList.map((item, index) => (
-    <div 
-      key={index}
-      ref={el => cardRefs.current[index] = el} // Vincula a referência
-      style={{
-        background: `url('/Hello.png') center/cover no-repeat`,
-        width: '100%',
-        height: '1417px', 
-        position: 'relative',
-        margin: '20px auto',
-        maxWidth: '1772px',
-        cursor: 'pointer'
-      }}
-    >
-      {/* Área do texto */}
-      <div style={{ 
-        position: 'absolute',
-        top: '63.7%', 
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '80%',
-        textAlign: 'center',
-        background: 'rgba(255,255,255,0.9)',
-        padding: '30px',
-        borderRadius: '10px'
+      {/* Mural de Cards */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: '30px',
+        padding: '20px',
+        maxWidth: '1200px',
+        margin: '0 auto'
       }}>
-        <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#000' }}>
-          {item.name.toUpperCase()}
-        </h2>
-        <p style={{ fontSize: '1.5rem', color: '#333', marginTop: '20px' }}>
-          "{item.dream}"
-        </p>
-      </div>
+        {dreamsList.map((item, index) => (
+          <div 
+            key={index}
+            ref={el => cardRefs.current[index] = el}
+            style={{
+              background: `url('/Hello.png') center/cover no-repeat`,
+              width: '100%',
+              height: '1417px',
+              position: 'relative',
+              margin: '20px auto',
+              maxWidth: '1772px',
+              cursor: 'pointer'
+            }}
+          >
+            <div style={{ 
+              position: 'absolute',
+              top: '63.7%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '80%',
+              textAlign: 'center',
+              background: 'rgba(255,255,255,0.9)',
+              padding: '30px',
+              borderRadius: '10px'
+            }}>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#000' }}>
+                {item.name.toUpperCase()}
+              </h2>
+              <p style={{ fontSize: '1.5rem', color: '#333', marginTop: '20px' }}>
+                "{item.dream}"
+              </p>
+            </div>
 
-      {/* Botão de Download */}
-      <button
-        onClick={() => saveCardAsImage(index)} // Chama a função
-        style={{
-          position: 'absolute',
-          bottom: '50px',
-          right: '50px',
-          background: '#000',
-          color: '#fff',
-          padding: '10px 20px',
-          border: 'none',
-          cursor: 'pointer',
-          borderRadius: '5px',
-          fontSize: '1.1rem'
-        }}
-      >
-        Baixar Imagem
-      </button>
+            <button
+              onClick={() => saveCardAsImage(index)}
+              style={{
+                position: 'absolute',
+                bottom: '50px',
+                right: '50px',
+                background: '#000',
+                color: '#fff',
+                padding: '10px 20px',
+                border: 'none',
+                cursor: 'pointer',
+                borderRadius: '5px',
+                fontSize: '1.1rem'
+              }}
+            >
+              Baixar Imagem
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
-  ))}
-</div>
+  );
+}
