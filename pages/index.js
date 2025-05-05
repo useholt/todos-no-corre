@@ -1,157 +1,65 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
+import { createClient } from '@supabase/supabase-js';
 
-export default function Mural() {
-  const [name, setName] = useState('');
-  const [dream, setDream] = useState('');
+const supabase = createClient(
+  'https://htogqublltjvxldjydig.supabase.co',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
+export default function Home() {
   const [dreamsList, setDreamsList] = useState([]);
   const cardRefs = useRef([]);
 
   useEffect(() => {
-    fetch('/api/getDreams')
-      .then(res => res.json())
-      .then(data => setDreamsList(data));
+    fetchDreams();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const response = await fetch('/api/addDream', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, dream })
-    });
-    if (response.ok) {
-      const updated = await fetch('/api/getDreams').then(res => res.json());
-      setDreamsList(updated);
-      setName('');
-      setDream('');
+  const fetchDreams = async () => {
+    const { data, error } = await supabase
+      .from('dreams')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Erro ao buscar sonhos:', error);
+    } else {
+      setDreamsList(data);
     }
   };
 
-  const saveCardAsImage = (index) => {
-    html2canvas(cardRefs.current[index]).then(canvas => {
+  const saveCardAsImage = async (index) => {
+    const element = cardRefs.current[index];
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element);
+      const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-      link.download = `sonho-${dreamsList[index].name}.png`;
-      link.href = canvas.toDataURL();
+      link.href = dataUrl;
+      link.download = `todos-no-corre-${index + 1}.png`;
       link.click();
-    });
+    } catch (error) {
+      console.error('Erro ao salvar imagem:', error);
+    }
   };
 
   return (
-    <div style={{
-      background: '#000',
-      color: '#fff',
-      minHeight: '100vh',
-      padding: '40px 20px',
-      fontFamily: "'Helvetica Neue', sans-serif",
-      textAlign: 'center'
-    }}>
-      <img 
-        src="/logo-holt.png" 
-        alt="Holt" 
-        style={{ 
-          width: '200px',
-          margin: '0 auto 20px',
-          display: 'block'
-        }} 
-      />
-
-      <h1 style={{ 
+    <div style={{ padding: '40px 0', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
+      <h1 style={{
+        textAlign: 'center',
         fontSize: '2.5rem',
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-        letterSpacing: '2px',
-        marginBottom: '20px'
+        marginBottom: '40px',
+        color: '#222'
       }}>
-        TODOS NO CORRE
+        Mural "Todos no Corre"
       </h1>
-
-      <p style={{ 
-        fontSize: '1.2rem',
-        maxWidth: '600px',
-        margin: '0 auto 40px',
-        lineHeight: '1.5'
-      }}>
-        Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
-      </p>
-
-      <div style={{
-        background: '#111',
-        padding: '30px',
-        borderRadius: '10px',
-        maxWidth: '500px',
-        margin: '0 auto 50px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-      }}>
-        <h2 style={{ 
-          fontSize: '1.5rem',
-          marginBottom: '25px',
-          textTransform: 'uppercase'
-        }}>
-          Qual é o seu sonho?
-        </h2>
-        
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Seu nome"
-            required
-            style={{
-              width: '100%',
-              padding: '12px',
-              margin: '10px 0',
-              background: '#222',
-              border: '1px solid #333',
-              color: '#fff',
-              fontSize: '1.1rem'
-            }}
-          />
-          
-          <textarea
-            value={dream}
-            onChange={(e) => setDream(e.target.value)}
-            placeholder="Seu sonho"
-            required
-            style={{
-              width: '100%',
-              padding: '12px',
-              margin: '10px 0',
-              background: '#222',
-              border: '1px solid #333',
-              color: '#fff',
-              minHeight: '120px',
-              fontSize: '1.1rem'
-            }}
-          />
-
-          <button
-            type="submit"
-            style={{
-              width: '100%',
-              padding: '15px',
-              background: '#fff',
-              color: '#000',
-              border: 'none',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              fontSize: '1.1rem',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              marginTop: '15px'
-            }}
-          >
-            Publicar no mural
-          </button>
-        </form>
-      </div>
 
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
         gap: '30px',
-        padding: '20px',
+        padding: '0 20px',
         maxWidth: '1200px',
         margin: '0 auto'
       }}>
@@ -164,7 +72,7 @@ export default function Mural() {
               width: '100%',
               height: '1417px',
               position: 'relative',
-              margin: '20px auto',
+              margin: '0 auto',
               maxWidth: '1772px',
               cursor: 'pointer'
             }}
@@ -208,7 +116,8 @@ export default function Mural() {
           </div>
         ))}
       </div>
-    </div>  
+    </div>
   );
 }
+
 
