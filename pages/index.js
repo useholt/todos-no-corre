@@ -1,123 +1,200 @@
-import { useEffect, useRef, useState } from 'react';
-import html2canvas from 'html2canvas';
-import { createClient } from '@supabase/supabase-js';
+import { useState, useEffect } from 'react';
 
-const supabase = createClient(
-  'https://htogqublltjvxldjydig.supabase.co',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
-
-export default function Home() {
+export default function Mural() {
+  const [name, setName] = useState('');
+  const [dream, setDream] = useState('');
   const [dreamsList, setDreamsList] = useState([]);
-  const cardRefs = useRef([]);
 
+  // Busca os sonhos do Supabase
   useEffect(() => {
-    fetchDreams();
+    fetch('/api/getDreams')
+      .then(res => res.json())
+      .then(data => setDreamsList(data));
   }, []);
 
-  const fetchDreams = async () => {
-    const { data, error } = await supabase
-      .from('dreams')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Erro ao buscar sonhos:', error);
-    } else {
-      setDreamsList(data);
-    }
-  };
-
-  const saveCardAsImage = async (index) => {
-    const element = cardRefs.current[index];
-    if (!element) return;
-
-    try {
-      const canvas = await html2canvas(element);
-      const dataUrl = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `todos-no-corre-${index + 1}.png`;
-      link.click();
-    } catch (error) {
-      console.error('Erro ao salvar imagem:', error);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const response = await fetch('/api/addDream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, dream })
+    });
+    if (response.ok) {
+      const updated = await fetch('/api/getDreams').then(res => res.json());
+      setDreamsList(updated);
+      setName('');
+      setDream('');
     }
   };
 
   return (
-    <div style={{ padding: '40px 0', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
-      <h1 style={{
-        textAlign: 'center',
+    <div style={{
+      background: '#000',
+      color: '#fff',
+      minHeight: '100vh',
+      padding: '40px 20px',
+      fontFamily: "'Helvetica Neue', sans-serif",
+      textAlign: 'center'
+    }}>
+      {/* Logo Holt */}
+      <img 
+        src="/logo-holt.png" 
+        alt="Holt" 
+        style={{ 
+          width: '200px',
+          margin: '0 auto 20px',
+          display: 'block'
+        }} 
+      />
+
+      {/* Título principal */}
+      <h1 style={{ 
         fontSize: '2.5rem',
-        marginBottom: '40px',
-        color: '#222'
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '2px',
+        marginBottom: '20px'
       }}>
-        Mural "Todos no Corre"
+        TODOS NO CORRE
       </h1>
 
+      {/* Frase descritiva */}
+      <p style={{ 
+        fontSize: '1.2rem',
+        maxWidth: '600px',
+        margin: '0 auto 40px',
+        lineHeight: '1.5'
+      }}>
+        Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
+      </p>
+
+      {/* Formulário */}
+      <div style={{
+        background: '#111',
+        padding: '30px',
+        borderRadius: '10px',
+        maxWidth: '500px',
+        margin: '0 auto 50px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+      }}>
+        <h2 style={{ 
+          fontSize: '1.5rem',
+          marginBottom: '25px',
+          textTransform: 'uppercase'
+        }}>
+          Qual é o seu sonho?
+        </h2>
+        
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Seu nome"
+            required
+            style={{
+              width: '100%',
+              padding: '12px',
+              margin: '10px 0',
+              background: '#222',
+              border: '1px solid #333',
+              color: '#fff',
+              fontSize: '1.1rem'
+            }}
+          />
+          
+          <textarea
+            value={dream}
+            onChange={(e) => setDream(e.target.value)}
+            placeholder="Seu sonho"
+            required
+            style={{
+              width: '100%',
+              padding: '12px',
+              margin: '10px 0',
+              background: '#222',
+              border: '1px solid #333',
+              color: '#fff',
+              minHeight: '120px',
+              fontSize: '1.1rem'
+            }}
+          />
+
+          <button
+            type="submit"
+            style={{
+              width: '100%',
+              padding: '15px',
+              background: '#fff',
+              color: '#000',
+              border: 'none',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              fontSize: '1.1rem',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              marginTop: '15px'
+            }}
+          >
+            Publicar no mural
+          </button>
+        </form>
+      </div>
+
+      {/* Mural de Cards Ajustado */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
         gap: '30px',
-        padding: '0 20px',
+        padding: '20px',
         maxWidth: '1200px',
         margin: '0 auto'
       }}>
         {dreamsList.map((item, index) => (
-          <div 
-            key={index}
-            ref={el => cardRefs.current[index] = el}
-            style={{
-              background: `url('/Hello.png') center/cover no-repeat`,
-              width: '100%',
-              height: '1417px',
-              position: 'relative',
-              margin: '0 auto',
-              maxWidth: '1772px',
-              cursor: 'pointer'
-            }}
-          >
+          <div key={index} style={{
+            background: `url('/Hello.png') center/cover no-repeat`,
+            padding: '30px 20px',
+            borderRadius: '8px',
+            minHeight: '400px',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Container do texto na área branca */}
             <div style={{ 
               position: 'absolute',
-              top: '63.7%',
+              top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
               width: '80%',
-              textAlign: 'center',
-              background: 'rgba(255,255,255,0.9)',
-              padding: '30px',
-              borderRadius: '10px'
+              background: 'rgba(255, 255, 255, 0.9)',
+              borderRadius: '8px',
+              padding: '25px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#000' }}>
+              <h2 style={{ 
+                fontSize: '1.8rem',
+                fontWeight: '900',
+                margin: '0 0 10px',
+                textTransform: 'uppercase',
+                color: '#000',
+                lineHeight: '1.1'
+              }}>
                 {item.name.toUpperCase()}
               </h2>
-              <p style={{ fontSize: '1.5rem', color: '#333', marginTop: '20px' }}>
+              
+              <p style={{ 
+                fontSize: '1.1rem',
+                margin: '15px 0',
+                color: '#333',
+                lineHeight: '1.4'
+              }}>
                 "{item.dream}"
               </p>
             </div>
-
-            <button
-              onClick={() => saveCardAsImage(index)}
-              style={{
-                position: 'absolute',
-                bottom: '50px',
-                right: '50px',
-                background: '#000',
-                color: '#fff',
-                padding: '10px 20px',
-                border: 'none',
-                cursor: 'pointer',
-                borderRadius: '5px',
-                fontSize: '1.1rem'
-              }}
-            >
-              Baixar Imagem
-            </button>
           </div>
         ))}
       </div>
     </div>
   );
 }
-
 
