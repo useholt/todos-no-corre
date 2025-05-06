@@ -65,7 +65,7 @@ export default function Mural() {
         margin: '0 auto 40px',
         lineHeight: '1.5'
       }}>
-        Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
+        Nosso corre é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
       </p>
 
       {/* Formulário */}
@@ -162,9 +162,9 @@ export default function Mural() {
             {/* Container do texto na área branca */}
             <div style={{ 
               position: 'absolute',
-              top: '60%',
+              top: '65%',
               left: '50%',
-              transform: 'translate(-50%, -40%)',
+              transform: 'translate(-50%, -45%)',
               width: '80%',
               background: 'rgba(255, 255, 255, 0.9)',
               borderRadius: '8px',
