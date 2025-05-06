@@ -168,6 +168,7 @@ export default function Mural() {
               width: '80%'
               padding: '25px',
               textAlign: 'center'
+              backgroundColor: 'transparent',
             }}>
               <h2 style={{ 
                 fontSize: '1.8rem',
