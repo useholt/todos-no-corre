@@ -164,7 +164,7 @@ export default function Mural() {
               position: 'absolute',
               top: '70%',
               left: '50%',
-              transform: 'translate(-70%, -30%)',
+              transform: 'translate(-50%, -30%)',
               width: '80%',
               background: 'rgba(255, 255, 255, 0.9)',
               borderRadius: '8px',
