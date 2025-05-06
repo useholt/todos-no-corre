@@ -161,11 +161,13 @@ export default function Mural() {
           }}>
             {/* Container do texto na área branca */}
             <div style={{ 
-              position: 'relative',
-              top: '65%',
+              position: 'absolute',
+              top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
               width: '80%'
+              padding: '25px',
+              textAlign: 'center'
             }}>
               <h2 style={{ 
                 fontSize: '1.8rem',
