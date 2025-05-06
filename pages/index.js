@@ -82,7 +82,7 @@ export default function Mural() {
           marginBottom: '25px',
           textTransform: 'uppercase'
         }}>
-          Qual é o seu sonho?
+          Qual é o seu corre?
         </h2>
         
         <form onSubmit={handleSubmit}>
@@ -106,7 +106,7 @@ export default function Mural() {
           <textarea
             value={dream}
             onChange={(e) => setDream(e.target.value)}
-            placeholder="Seu sonho"
+            placeholder="seu corre"
             required
             style={{
               width: '100%',
