@@ -164,12 +164,8 @@ export default function Mural() {
               position: 'absolute',
               top: '65%',
               left: '50%',
-              transform: 'translate(-50%, -35%)',
-              width: '80%',
-              background: 'rgba(255, 255, 255, 0.9)',
-              borderRadius: '8px',
-              padding: '25px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              transform: 'translate(-50%, -50%)',
+              width: '80%'
             }}>
               <h2 style={{ 
                 fontSize: '1.8rem',
