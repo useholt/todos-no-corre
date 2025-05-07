@@ -4,12 +4,20 @@ export default function Mural() {
   const [name, setName] = useState('');
   const [dream, setDream] = useState('');
   const [dreamsList, setDreamsList] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Busca os sonhos do Supabase
   useEffect(() => {
     fetch('/api/getDreams')
       .then(res => res.json())
-      .then(data => setDreamsList(data));
+      .then(data => {
+        const optimizedData = data.map(item => ({
+          ...item,
+          image_url: `${item.image_url}?width=600&height=600&quality=80` // Otimização Supabase
+        }));
+        setDreamsList(optimizedData);
+      });
   }, []);
 
   const handleSubmit = async (e) => {
@@ -25,6 +33,16 @@ export default function Mural() {
       setName('');
       setDream('');
     }
+  };
+
+  const openLightbox = (item) => {
+    setSelectedImage(item);
+    setIsModalOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setSelectedImage(null);
+    setIsModalOpen(false);
   };
 
   return (
@@ -141,58 +159,140 @@ export default function Mural() {
         </form>
       </div>
 
-      {/* Mural de Cards Ajustado */}
+      {/* Nova Grade de Imagens */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: '30px',
-        padding: '20px',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '4px',
+        padding: '4px',
+        width: '100%',
         maxWidth: '1200px',
-        margin: '0 auto'
+        margin: '0 auto',
+        '@media (min-width: 640px)': {
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '8px',
+          padding: '8px'
+        },
+        '@media (min-width: 1024px)': {
+          gridTemplateColumns: 'repeat(5, 1fr)'
+        }
       }}>
         {dreamsList.map((item, index) => (
-          <div key={index} style={{
-            background: `url('/Hello.png') center/cover no-repeat`,
-            padding: '30px 20px',
-            borderRadius: '8px',
-            minHeight: '400px',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            {/* Container do texto na área branca */}
-            <div style={{ 
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '80%'
-              padding: '25px',
-              textAlign: 'center'
-              backgroundColor: 'transparent',
-            }}>
-              <h2 style={{ 
-                fontSize: '1.8rem',
-                fontWeight: '900',
-                margin: '0 0 10px',
-                textTransform: 'uppercase',
-                color: '#000',
-                lineHeight: '1.1'
-              }}>
-                {item.name.toUpperCase()}
-              </h2>
-              
-              <p style={{ 
-                fontSize: '1.1rem',
-                margin: '15px 0',
-                color: '#333',
-                lineHeight: '1.4'
-              }}>
-                "{item.dream}"
-              </p>
-            </div>
+          <div 
+            key={index} 
+            style={{
+              position: 'relative',
+              cursor: 'pointer',
+              aspectRatio: '1/1',
+              overflow: 'hidden',
+              transition: 'transform 0.3s ease',
+              ':hover': {
+                transform: 'scale(1.03)'
+              }
+            }}
+            onClick={() => openLightbox(item)}
+          >
+            <img
+              src={item.image_url || '/Hello.png'}
+              alt={`Sonho de ${item.name}`}
+              loading="lazy"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                filter: 'brightness(0.9)'
+              }}
+            />
           </div>
         ))}
       </div>
+
+      {/* Modal de Tela Cheia */}
+      {isModalOpen && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.97)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backdropFilter: 'blur(10px)'
+          }} 
+          onClick={closeLightbox}
+        >
+          <div style={{
+            position: 'relative',
+            maxWidth: '90%',
+            maxHeight: '90vh',
+            textAlign: 'center'
+          }}>
+            <button
+              onClick={closeLightbox}
+              style={{
+                position: 'absolute',
+                top: '-40px',
+                right: '0',
+                background: 'none',
+                border: 'none',
+                color: '#fff',
+                fontSize: '2.5rem',
+                cursor: 'pointer',
+                zIndex: 1001
+              }}
+            >
+              ×
+            </button>
+            
+            <div style={{
+              position: 'relative',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              boxShadow: '0 8px 30px rgba(0,0,0,0.4)'
+            }}>
+              <img
+                src={selectedImage?.image_url}
+                alt={`Sonho de ${selectedImage?.name}`}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '80vh',
+                  objectFit: 'contain'
+                }}
+              />
+              
+              <div style={{
+                position: 'absolute',
+                bottom: '0',
+                left: '0',
+                right: '0',
+                padding: '20px',
+                background: 'linear-gradient(transparent, rgba(0,0,0,0.8))'
+              }}>
+                <h3 style={{ 
+                  margin: 0,
+                  color: '#fff',
+                  fontSize: '1.8rem',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                }}>
+                  {selectedImage?.name.toUpperCase()}
+                </h3>
+                <p style={{ 
+                  margin: '10px 0 0',
+                  color: '#fff',
+                  fontSize: '1.2rem',
+                  lineHeight: '1.4'
+                }}>
+                  "{selectedImage?.dream}"
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
