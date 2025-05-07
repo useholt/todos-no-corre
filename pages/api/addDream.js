@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Método não permitido' });
   }
 
-  const { name, dream, image } = req.body;
+  const { name, dream } = req.body;
 
   try {
     // 1. Upload da imagem para o Storage
