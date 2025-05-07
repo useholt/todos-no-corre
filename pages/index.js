@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 export default function Mural() {
   const [name, setName] = useState('');
   const [dream, setDream] = useState('');
-  const [image, setImage] = useState(null);
   const [dreamsList, setDreamsList] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,32 +22,17 @@ export default function Mural() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const response = await fetch('/api/addDream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, dream })
+    });
     
-    if (!image) {
-      alert('Por favor, selecione uma imagem!');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/addDream', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name, 
-          dream,
-          image 
-        })
-      });
-
-      if (response.ok) {
-        const updated = await fetch('/api/getDreams').then(res => res.json());
-        setDreamsList(updated);
-        setName('');
-        setDream('');
-        setImage(null);
-      }
-    } catch (error) {
-      console.error('Erro ao enviar:', error);
+    if (response.ok) {
+      const updated = await fetch('/api/getDreams').then(res => res.json());
+      setDreamsList(updated);
+      setName('');
+      setDream('');
     }
   };
 
@@ -60,6 +44,16 @@ export default function Mural() {
   const closeLightbox = () => {
     setSelectedImage(null);
     setIsModalOpen(false);
+  };
+
+  // Função para salvar imagem
+  const downloadImage = (url) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `sonho-${Date.now()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -100,6 +94,7 @@ export default function Mural() {
         Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
       </p>
 
+      {/* Formulário simplificado (sem upload de imagem) */}
       <div style={{
         background: '#111',
         padding: '30px',
@@ -151,37 +146,6 @@ export default function Mural() {
             }}
           />
 
-          <div style={{ margin: '15px 0' }}>
-            <label style={{ 
-              display: 'block', 
-              textAlign: 'left',
-              marginBottom: '8px',
-              color: '#fff',
-              fontSize: '1rem'
-            }}>
-              Imagem do seu sonho:
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              required
-              onChange={(e) => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onloadend = () => setImage(reader.result);
-                reader.readAsDataURL(file);
-              }}
-              style={{
-                width: '100%',
-                padding: '8px',
-                background: '#333',
-                border: '1px solid #444',
-                color: '#fff',
-                borderRadius: '4px'
-              }}
-            />
-          </div>
-
           <button
             type="submit"
             style={{
@@ -203,6 +167,7 @@ export default function Mural() {
         </form>
       </div>
 
+      {/* Grade de Imagens */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -250,6 +215,7 @@ export default function Mural() {
         ))}
       </div>
 
+      {/* Modal com Botão de Download */}
       {isModalOpen && (
         <div 
           style={{
@@ -265,7 +231,6 @@ export default function Mural() {
             justifyContent: 'center',
             backdropFilter: 'blur(10px)'
           }} 
-          onClick={closeLightbox}
         >
           <div style={{
             position: 'relative',
@@ -288,6 +253,25 @@ export default function Mural() {
               }}
             >
               ×
+            </button>
+
+            <button
+              onClick={() => downloadImage(selectedImage?.image_url)}
+              style={{
+                position: 'absolute',
+                top: '-40px',
+                right: '60px',
+                background: '#ffffff',
+                border: 'none',
+                color: '#000',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                zIndex: 1001,
+                fontWeight: 'bold'
+              }}
+            >
+              SALVAR
             </button>
             
             <div style={{
