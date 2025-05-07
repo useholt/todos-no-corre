@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 export default function Mural() {
   const [name, setName] = useState('');
   const [dream, setDream] = useState('');
+  const [image, setImage] = useState(null);
   const [dreamsList, setDreamsList] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,7 +15,7 @@ export default function Mural() {
       .then(data => {
         const optimizedData = data.map(item => ({
           ...item,
-          image_url: `${item.image_url}?width=600&height=600&quality=80` // Otimização Supabase
+          image_url: `${item.image_url}?width=600&height=600&quality=80`
         }));
         setDreamsList(optimizedData);
       });
@@ -22,16 +23,32 @@ export default function Mural() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('/api/addDream', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, dream })
-    });
-    if (response.ok) {
-      const updated = await fetch('/api/getDreams').then(res => res.json());
-      setDreamsList(updated);
-      setName('');
-      setDream('');
+    
+    if (!image) {
+      alert('Por favor, selecione uma imagem!');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/addDream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name, 
+          dream,
+          image 
+        })
+      });
+
+      if (response.ok) {
+        const updated = await fetch('/api/getDreams').then(res => res.json());
+        setDreamsList(updated);
+        setName('');
+        setDream('');
+        setImage(null);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar:', error);
     }
   };
 
@@ -54,7 +71,6 @@ export default function Mural() {
       fontFamily: "'Helvetica Neue', sans-serif",
       textAlign: 'center'
     }}>
-      {/* Logo Holt */}
       <img 
         src="/logo-holt.png" 
         alt="Holt" 
@@ -65,7 +81,6 @@ export default function Mural() {
         }} 
       />
 
-      {/* Título principal */}
       <h1 style={{ 
         fontSize: '2.5rem',
         fontWeight: 'bold',
@@ -76,7 +91,6 @@ export default function Mural() {
         TODOS NO CORRE
       </h1>
 
-      {/* Frase descritiva */}
       <p style={{ 
         fontSize: '1.2rem',
         maxWidth: '600px',
@@ -86,7 +100,6 @@ export default function Mural() {
         Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
       </p>
 
-      {/* Formulário */}
       <div style={{
         background: '#111',
         padding: '30px',
@@ -138,6 +151,37 @@ export default function Mural() {
             }}
           />
 
+          <div style={{ margin: '15px 0' }}>
+            <label style={{ 
+              display: 'block', 
+              textAlign: 'left',
+              marginBottom: '8px',
+              color: '#fff',
+              fontSize: '1rem'
+            }}>
+              Imagem do seu sonho:
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              required
+              onChange={(e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onloadend = () => setImage(reader.result);
+                reader.readAsDataURL(file);
+              }}
+              style={{
+                width: '100%',
+                padding: '8px',
+                background: '#333',
+                border: '1px solid #444',
+                color: '#fff',
+                borderRadius: '4px'
+              }}
+            />
+          </div>
+
           <button
             type="submit"
             style={{
@@ -159,7 +203,6 @@ export default function Mural() {
         </form>
       </div>
 
-      {/* Nova Grade de Imagens */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
@@ -207,7 +250,6 @@ export default function Mural() {
         ))}
       </div>
 
-      {/* Modal de Tela Cheia */}
       {isModalOpen && (
         <div 
           style={{
