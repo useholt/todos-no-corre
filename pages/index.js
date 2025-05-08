@@ -165,9 +165,9 @@ export default function Mural() {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: '80%'
+              width: '80%',
               padding: '25px',
-              textAlign: 'center'
+              textAlign: 'center',
               backgroundColor: 'transparent',
             }}>
               <h2 style={{ 
