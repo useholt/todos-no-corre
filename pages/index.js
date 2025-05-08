@@ -7,7 +7,6 @@ export default function Mural() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Busca os sonhos do Supabase
   useEffect(() => {
     fetch('/api/getDreams')
       .then(res => res.json())
@@ -30,7 +29,6 @@ export default function Mural() {
     }
   };
 
-  // Função para gerar imagem com texto
   const generateImageWithText = async (name, dream) => {
     const baseImage = new Image();
     baseImage.crossOrigin = "anonymous";
