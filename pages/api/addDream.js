@@ -1,26 +1,40 @@
-// Conexão com o Supabase
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
 
-// API para adicionar sonhos
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Método não permitido' });
   }
 
-  const { name, dream } = req.body;
-
   try {
+    const { name, dream } = req.body;
+
+    // Insere no banco de dados
     const { data, error } = await supabase
       .from('dreams')
-      .insert([{ name, dream }]);
+      .insert([{ 
+        name, 
+        dream 
+      }])
+      .select('*'); // Adiciona isso para retornar os dados inseridos
 
-    if (error) throw error;
-    return res.status(200).json(data);
+    if (error) {
+      console.error('Erro no Supabase:', error);
+      throw error;
+    }
+
+    // Retorna apenas o primeiro item do array (dados do novo registro)
+    res.status(201).json(data[0]); 
+
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    console.error('Erro na API:', error);
+    res.status(500).json({ 
+      error: error.message,
+      details: error 
+    });
   }
 }
