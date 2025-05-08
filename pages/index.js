@@ -45,15 +45,11 @@ export default function Mural() {
 
     ctx.drawImage(baseImage, 0, 0);
     
-    // Configurações do texto
     ctx.fillStyle = '#000000';
     ctx.font = 'bold 40px Arial';
     ctx.textAlign = 'center';
-    
-    // Escreve o nome
     ctx.fillText(name.toUpperCase(), canvas.width/2, 100);
     
-    // Escreve o sonho
     ctx.font = '28px Arial';
     const maxWidth = canvas.width - 40;
     const lineHeight = 35;
@@ -77,7 +73,6 @@ export default function Mural() {
     return canvas.toDataURL('image/png');
   };
 
-  // Função de download atualizada
   const downloadImage = async (item) => {
     const imageUrl = await generateImageWithText(item.name, item.dream);
     
