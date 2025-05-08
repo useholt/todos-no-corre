@@ -6,8 +6,10 @@ export default function Mural() {
   const [dreamsList, setDreamsList] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    setHasMounted(true);
     fetch('/api/getDreams')
       .then(res => res.json())
       .then(data => setDreamsList(data));
@@ -204,54 +206,45 @@ export default function Mural() {
         </form>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '4px',
-        padding: '4px',
-        width: '100%',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        '@media (min-width: 640px)': {
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '8px',
-          padding: '8px'
-        },
-        '@media (min-width: 1024px)': {
-          gridTemplateColumns: 'repeat(5, 1fr)'
-        }
-      }}>
-        {dreamsList.map((item, index) => (
-          <div 
-            key={index} 
-            style={{
-              position: 'relative',
-              cursor: 'pointer',
-              aspectRatio: '1/1',
-              overflow: 'hidden',
-              transition: 'transform 0.3s ease',
-              ':hover': {
-                transform: 'scale(1.03)'
-              }
-            }}
-            onClick={() => openLightbox(item)}
-          >
-            <img
-              src="/Hello.png"
-              alt={`Sonho de ${item.name}`}
-              loading="lazy"
+      {hasMounted && (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '4px',
+          padding: '4px',
+          width: '100%',
+          maxWidth: '1200px',
+          margin: '0 auto'
+        }}>
+          {dreamsList.map((item, index) => (
+            <div 
+              key={index} 
               style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                filter: 'brightness(0.9)'
+                position: 'relative',
+                cursor: 'pointer',
+                aspectRatio: '1/1',
+                overflow: 'hidden',
+                transition: 'transform 0.3s ease'
               }}
-            />
-          </div>
-        ))}
-      </div>
+              onClick={() => openLightbox(item)}
+            >
+              <img
+                src="/Hello.png"
+                alt={`Sonho de ${item.name}`}
+                loading="lazy"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  filter: 'brightness(0.9)'
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
-      {isModalOpen && (
+      {isModalOpen && selectedImage && (
         <div 
           style={{
             position: 'fixed',
