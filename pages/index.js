@@ -4,9 +4,8 @@ export default function Mural() {
   const [name, setName] = useState('');
   const [dream, setDream] = useState('');
   const [dreamsList, setDreamsList] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Busca os sonhos do Supabase
   useEffect(() => {
     fetch('/api/getDreams')
       .then(res => res.json())
@@ -20,76 +19,12 @@ export default function Mural() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, dream })
     });
-    
     if (response.ok) {
       const updated = await fetch('/api/getDreams').then(res => res.json());
       setDreamsList(updated);
       setName('');
       setDream('');
     }
-  };
-
-  const generateImageWithText = async (name, dream) => {
-    const baseImage = new Image();
-    baseImage.crossOrigin = "anonymous";
-    baseImage.src = '/Hello.png';
-    
-    await new Promise((resolve) => (baseImage.onload = resolve));
-
-    const canvas = document.createElement('canvas');
-    canvas.width = baseImage.naturalWidth;
-    canvas.height = baseImage.naturalHeight;
-    const ctx = canvas.getContext('2d');
-
-    ctx.drawImage(baseImage, 0, 0);
-    
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 40px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(name.toUpperCase(), canvas.width/2, 100);
-    
-    ctx.font = '28px Arial';
-    const maxWidth = canvas.width - 40;
-    const lineHeight = 35;
-    const words = dream.split(' ');
-    let line = '';
-    let y = 200;
-
-    for (const word of words) {
-      const testLine = line + word + ' ';
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth && line !== '') {
-        ctx.fillText(`"${line}"`, canvas.width/2, y);
-        line = word + ' ';
-        y += lineHeight;
-      } else {
-        line = testLine;
-      }
-    }
-    ctx.fillText(`"${line}"`, canvas.width/2, y);
-
-    return canvas.toDataURL('image/png');
-  };
-
-  const downloadImage = async (item) => {
-    const imageUrl = await generateImageWithText(item.name, item.dream);
-    
-    const link = document.createElement('a');
-    link.href = imageUrl;
-    link.download = `sonho-${item.name}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const openLightbox = (item) => {
-    setSelectedImage(item);
-    setIsModalOpen(true);
-  };
-
-  const closeLightbox = () => {
-    setSelectedImage(null);
-    setIsModalOpen(false);
   };
 
   return (
@@ -101,6 +36,7 @@ export default function Mural() {
       fontFamily: "'Helvetica Neue', sans-serif",
       textAlign: 'center'
     }}>
+      {/* Logo Holt */}
       <img 
         src="/logo-holt.png" 
         alt="Holt" 
@@ -111,6 +47,7 @@ export default function Mural() {
         }} 
       />
 
+      {/* Título principal */}
       <h1 style={{ 
         fontSize: '2.5rem',
         fontWeight: 'bold',
@@ -121,6 +58,7 @@ export default function Mural() {
         TODOS NO CORRE
       </h1>
 
+      {/* Frase descritiva */}
       <p style={{ 
         fontSize: '1.2rem',
         maxWidth: '600px',
@@ -130,6 +68,7 @@ export default function Mural() {
         Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
       </p>
 
+      {/* Formulário */}
       <div style={{
         background: '#111',
         padding: '30px',
@@ -202,156 +141,58 @@ export default function Mural() {
         </form>
       </div>
 
+      {/* Mural de Cards Ajustado */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '4px',
-        padding: '4px',
-        width: '100%',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+        gap: '30px',
+        padding: '20px',
         maxWidth: '1200px',
-        margin: '0 auto',
-        '@media (min-width: 640px)': {
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '8px',
-          padding: '8px'
-        },
-        '@media (min-width: 1024px)': {
-          gridTemplateColumns: 'repeat(5, 1fr)'
-        }
+        margin: '0 auto'
       }}>
         {dreamsList.map((item, index) => (
-          <div 
-            key={index} 
-            style={{
-              position: 'relative',
-              cursor: 'pointer',
-              aspectRatio: '1/1',
-              overflow: 'hidden',
-              transition: 'transform 0.3s ease',
-              ':hover': {
-                transform: 'scale(1.03)'
-              }
-            }}
-            onClick={() => openLightbox(item)}
-          >
-            <img
-              src="/Hello.png"
-              alt={`Sonho de ${item.name}`}
-              loading="lazy"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                filter: 'brightness(0.9)'
-              }}
-            />
+          <div key={index} style={{
+            background: `url('/Hello.png') center/cover no-repeat`,
+            padding: '30px 20px',
+            borderRadius: '8px',
+            minHeight: '400px',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Container do texto na área branca */}
+            <div style={{ 
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '80%'
+              padding: '25px',
+              textAlign: 'center'
+              backgroundColor: 'transparent',
+            }}>
+              <h2 style={{ 
+                fontSize: '1.8rem',
+                fontWeight: '900',
+                margin: '0 0 10px',
+                textTransform: 'uppercase',
+                color: '#000',
+                lineHeight: '1.1'
+              }}>
+                {item.name.toUpperCase()}
+              </h2>
+              
+              <p style={{ 
+                fontSize: '1.1rem',
+                margin: '15px 0',
+                color: '#333',
+                lineHeight: '1.4'
+              }}>
+                "{item.dream}"
+              </p>
+            </div>
           </div>
         ))}
       </div>
-
-      {isModalOpen && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.97)',
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backdropFilter: 'blur(10px)'
-          }} 
-        >
-          <div style={{
-            position: 'relative',
-            maxWidth: '90%',
-            maxHeight: '90vh',
-            textAlign: 'center'
-          }}>
-            <button
-              onClick={closeLightbox}
-              style={{
-                position: 'absolute',
-                top: '-40px',
-                right: '0',
-                background: 'none',
-                border: 'none',
-                color: '#fff',
-                fontSize: '2.5rem',
-                cursor: 'pointer',
-                zIndex: 1001
-              }}
-            >
-              ×
-            </button>
-
-            <button
-              onClick={() => downloadImage(selectedImage)}
-              style={{
-                position: 'absolute',
-                top: '-40px',
-                right: '60px',
-                background: '#ffffff',
-                border: 'none',
-                color: '#000',
-                padding: '8px 16px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                zIndex: 1001,
-                fontWeight: 'bold'
-              }}
-            >
-              SALVAR
-            </button>
-            
-            <div style={{
-              position: 'relative',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              boxShadow: '0 8px 30px rgba(0,0,0,0.4)'
-            }}>
-              <img
-                src="/Hello.png"
-                alt={`Sonho de ${selectedImage?.name}`}
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '80vh',
-                  objectFit: 'contain'
-                }}
-              />
-              
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '80%',
-                textAlign: 'center'
-              }}>
-                <h3 style={{ 
-                  margin: 0,
-                  color: '#000',
-                  fontSize: '2rem',
-                  fontWeight: 'bold'
-                }}>
-                  {selectedImage?.name.toUpperCase()}
-                </h3>
-                <p style={{ 
-                  margin: '15px 0 0',
-                  color: '#333',
-                  fontSize: '1.4rem',
-                  lineHeight: '1.4'
-                }}>
-                  "{selectedImage?.dream}"
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
