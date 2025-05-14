@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+  process.env.SUPABASE_KEY // Confira se é SUPABASE_ANON_KEY ou SUPABASE_KEY no seu .env
 );
 
 export default async function handler(req, res) {
@@ -11,30 +11,41 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, dream } = req.body;
+    // Extrai imageUrl do corpo da requisição
+    const { name, dream, imageUrl } = req.body;
 
-    // Insere no banco de dados
+    if (!name || !dream || !imageUrl) {
+      return res.status(400).json({ 
+        error: 'Dados incompletos. Name, dream e imageUrl são obrigatórios.' 
+      });
+    }
+
+    // Insere com image_url
     const { data, error } = await supabase
       .from('dreams')
       .insert([{ 
         name, 
-        dream 
+        dream,
+        image_url: imageUrl // Campo novo
       }])
-      .select('*'); // Adiciona isso para retornar os dados inseridos
+      .select('*');
 
     if (error) {
       console.error('Erro no Supabase:', error);
-      throw error;
+      return res.status(400).json({ 
+        error: 'Erro ao salvar sonho',
+        details: error 
+      });
     }
 
-    // Retorna apenas o primeiro item do array (dados do novo registro)
-    res.status(201).json(data[0]); 
+    // Retorna dados completos com image_url
+    res.status(201).json(data[0]);
 
   } catch (error) {
-    console.error('Erro na API:', error);
+    console.error('Erro geral na API:', error);
     res.status(500).json({ 
-      error: error.message,
-      details: error 
+      error: 'Erro interno no servidor',
+      details: error.message 
     });
   }
 }
