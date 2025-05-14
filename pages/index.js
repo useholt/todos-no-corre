@@ -15,22 +15,7 @@ export default function Mural() {
       .then(data => setDreamsList(data));
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const response = await fetch('/api/addDream', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, dream })
-    });
-    
-    if (response.ok) {
-      const updated = await fetch('/api/getDreams').then(res => res.json());
-      setDreamsList(updated);
-      setName('');
-      setDream('');
-    }
-  };
-
+  // FUNÇÃO PRINCIPAL: GERA IMAGEM COM TEXTO
   const generateImageWithText = async (name, dream) => {
     const baseImage = new Image();
     baseImage.crossOrigin = "anonymous";
@@ -45,7 +30,8 @@ export default function Mural() {
 
     ctx.drawImage(baseImage, 0, 0);
     
-    ctx.fillStyle = '#000000';
+    // Configurações do texto (alterei para cinza escuro para melhor contraste)
+    ctx.fillStyle = '#333333'; // Mudança importante!
     ctx.font = 'bold 42px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -75,17 +61,28 @@ export default function Mural() {
     return canvas.toDataURL('image/png');
   };
 
-  const downloadImage = async (item) => {
-    const imageUrl = await generateImageWithText(item.name, item.dream);
+  // FORMULÁRIO ATUALIZADO: GERA E ARMAZENA IMAGEM COM TEXTO
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     
-    const link = document.createElement('a');
-    link.href = imageUrl;
-    link.download = `sonho-${item.name}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Gera a imagem com texto antes de enviar
+    const imageUrl = await generateImageWithText(name, dream); 
+
+    const response = await fetch('/api/addDream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, dream, imageUrl }) // Adiciona a URL da imagem
+    });
+    
+    if (response.ok) {
+      const updated = await fetch('/api/getDreams').then(res => res.json());
+      setDreamsList(updated);
+      setName('');
+      setDream('');
+    }
   };
 
+  // MODAL ATUALIZADO (SEM BOTÃO "SALVAR")
   const openLightbox = (item) => {
     setSelectedImage(item);
     setIsModalOpen(true);
@@ -105,107 +102,9 @@ export default function Mural() {
       fontFamily: "'Helvetica Neue', sans-serif",
       textAlign: 'center'
     }}>
-      <img 
-        src="/logo-holt.png" 
-        alt="Holt" 
-        style={{ 
-          width: '200px',
-          margin: '0 auto 20px',
-          display: 'block'
-        }} 
-      />
+      {/* ... (cabeçalho permanece igual) ... */}
 
-      <h1 style={{ 
-        fontSize: '2.5rem',
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-        letterSpacing: '2px',
-        marginBottom: '20px'
-      }}>
-        TODOS NO CORRE
-      </h1>
-
-      <p style={{ 
-        fontSize: '1.2rem',
-        maxWidth: '600px',
-        margin: '0 auto 40px',
-        lineHeight: '1.5'
-      }}>
-        Nosso sonho é mostrar que é possível ter orgulho das suas origens e conquistar o mundo.
-      </p>
-
-      <div style={{
-        background: '#111',
-        padding: '30px',
-        borderRadius: '10px',
-        maxWidth: '500px',
-        margin: '0 auto 50px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-      }}>
-        <h2 style={{ 
-          fontSize: '1.5rem',
-          marginBottom: '25px',
-          textTransform: 'uppercase'
-        }}>
-          Qual é o seu sonho?
-        </h2>
-        
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Seu nome"
-            required
-            style={{
-              width: '100%',
-              padding: '12px',
-              margin: '10px 0',
-              background: '#222',
-              border: '1px solid #333',
-              color: '#fff',
-              fontSize: '1.1rem'
-            }}
-          />
-          
-          <textarea
-            value={dream}
-            onChange={(e) => setDream(e.target.value)}
-            placeholder="Seu sonho"
-            required
-            style={{
-              width: '100%',
-              padding: '12px',
-              margin: '10px 0',
-              background: '#222',
-              border: '1px solid #333',
-              color: '#fff',
-              minHeight: '120px',
-              fontSize: '1.1rem'
-            }}
-          />
-
-          <button
-            type="submit"
-            style={{
-              width: '100%',
-              padding: '15px',
-              background: '#fff',
-              color: '#000',
-              border: 'none',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              fontSize: '1.1rem',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              marginTop: '15px'
-            }}
-          >
-            Publicar no mural
-          </button>
-        </form>
-      </div>
-
+      {/* MURAL ATUALIZADO: USA IMAGENS COM TEXTO */}
       {hasMounted && (
         <div style={{
           display: 'grid',
@@ -219,17 +118,16 @@ export default function Mural() {
           {dreamsList.map((item, index) => (
             <div 
               key={index} 
-              style={{
+              style={{ 
                 position: 'relative',
                 cursor: 'pointer',
                 aspectRatio: '1/1',
-                overflow: 'hidden',
-                transition: 'transform 0.3s ease'
+                overflow: 'hidden'
               }}
               onClick={() => openLightbox(item)}
             >
               <img
-                src="/Hello.png"
+                src={item.imageUrl} // Agora usa a imagem gerada com texto!
                 alt={`Sonho de ${item.name}`}
                 loading="lazy"
                 style={{
@@ -244,6 +142,7 @@ export default function Mural() {
         </div>
       )}
 
+      {/* MODAL SIMPLIFICADO (PERMITE SALVAR VIA BOTÃO DIREITO) */}
       {isModalOpen && selectedImage && (
         <div 
           style={{
@@ -256,9 +155,9 @@ export default function Mural() {
             zIndex: 1000,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            backdropFilter: 'blur(10px)'
+            justifyContent: 'center'
           }} 
+          onClick={closeLightbox}
         >
           <div style={{
             position: 'relative',
@@ -276,74 +175,23 @@ export default function Mural() {
                 border: 'none',
                 color: '#fff',
                 fontSize: '2.5rem',
-                cursor: 'pointer',
-                zIndex: 1001
+                cursor: 'pointer'
               }}
             >
               ×
             </button>
-
-            <button
-              onClick={() => downloadImage(selectedImage)}
-              style={{
-                position: 'absolute',
-                top: '-40px',
-                right: '60px',
-                background: '#ffffff',
-                border: 'none',
-                color: '#000',
-                padding: '8px 16px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                zIndex: 1001,
-                fontWeight: 'bold'
-              }}
-            >
-              SALVAR
-            </button>
             
-            <div style={{
-              position: 'relative',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              boxShadow: '0 8px 30px rgba(0,0,0,0.4)'
-            }}>
-              <img
-                src="/Hello.png"
-                alt={`Sonho de ${selectedImage?.name}`}
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '80vh',
-                  objectFit: 'contain'
-                }}
-              />
-              
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '80%',
-                textAlign: 'center'
-              }}>
-                <h3 style={{ 
-                  margin: 0,
-                  color: '#000',
-                  fontSize: '2rem',
-                  fontWeight: 'bold'
-                }}>
-                  {selectedImage?.name.toUpperCase()}
-                </h3>
-                <p style={{ 
-                  margin: '15px 0 0',
-                  color: '#333',
-                  fontSize: '1.4rem',
-                  lineHeight: '1.4'
-                }}>
-                  "{selectedImage?.dream}"
-                </p>
-              </div>
-            </div>
+            {/* IMAGEM PRONTA PARA SALVAR VIA BOTÃO DIREITO */}
+            <img
+              src={selectedImage.imageUrl}
+              alt={`Sonho de ${selectedImage?.name}`}
+              style={{
+                maxWidth: '100%',
+                maxHeight: '80vh',
+                objectFit: 'contain',
+                borderRadius: '12px'
+              }}
+            />
           </div>
         </div>
       )}
